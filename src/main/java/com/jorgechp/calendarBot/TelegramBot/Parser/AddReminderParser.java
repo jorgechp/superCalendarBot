@@ -14,7 +14,7 @@ public class AddReminderParser extends AbstractParser{
 	private final String  acceptedFormatDateHour = "dd/MM/yyyyHH:mm";
 
   
-	  @Parameter(names = "-title", description = "Reminder", variableArity = true)
+	  @Parameter(names = "-title", description = "Reminder", variableArity = true, required = true)
 	  private List<String> reminderTitle = new LinkedList<String>();
 	  
 	  @Parameter(names = "-description", description = "Description", variableArity = true)

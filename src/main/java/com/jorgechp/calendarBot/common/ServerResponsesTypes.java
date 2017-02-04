@@ -7,7 +7,8 @@ package com.jorgechp.calendarBot.common;
  * @author jorge
  *
  */
-public enum ServerResponses {
+public enum ServerResponsesTypes {
+	REQUEST_VOID,	
 	REQUEST_OK,	
 	ADD_REMINDER_OK,
 	ADD_USER_ERROR,

@@ -20,7 +20,7 @@ import com.jorgechp.calendarBot.ReminderSystem.entities.User;
 import com.jorgechp.calendarBot.ReminderSystem.entities.interfaces.INotificationListener;
 import com.jorgechp.calendarBot.ReminderSystem.management.CalendarManager;
 import com.jorgechp.calendarBot.common.ServerResponse;
-import com.jorgechp.calendarBot.common.ServerResponses;
+import com.jorgechp.calendarBot.common.ServerResponsesTypes;
 import com.jorgechp.calendarBot.common.interfaces.IRemindable;
 import com.jorgechp.calendarBot.common.interfaces.IReminderSystem;
 
@@ -139,13 +139,13 @@ public class ReminderSystem implements IReminderSystem, INotificationListener{
 			try{
 				long uniqueId = newReminder.getReminderId();
 				remindersMap.put(uniqueId,newReminder);
-				return new ServerResponse<Long>(ServerResponses.ADD_REMINDER_OK,uniqueId);
+				return new ServerResponse<Long>(ServerResponsesTypes.ADD_REMINDER_OK,uniqueId);
 			}catch(NullPointerException e){
 				//If something wrong has happen, we need to remove the Reminder from usersMap
 				remindersMap.remove(newReminder);
 			}						
 		}
-		return new ServerResponse<>(ServerResponses.ADD_REMINDER_ERROR);
+		return new ServerResponse<>(ServerResponsesTypes.ADD_REMINDER_ERROR);
 	}
 	
 	/* (non-Javadoc)
@@ -202,7 +202,7 @@ public class ReminderSystem implements IReminderSystem, INotificationListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new ServerResponse<Boolean>(ServerResponses.ADD_NOTIFICATION_ERROR);
+		return new ServerResponse<Boolean>(ServerResponsesTypes.ADD_NOTIFICATION_ERROR);
 	}
 	
 	/**

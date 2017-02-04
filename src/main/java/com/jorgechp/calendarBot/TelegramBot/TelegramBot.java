@@ -16,10 +16,11 @@ import com.jorgechp.calendarBot.ReminderSystem.entities.interfaces.INotification
 import com.jorgechp.calendarBot.TelegramBot.Entities.BotOrder;
 import com.jorgechp.calendarBot.TelegramBot.components.OrderType;
 import com.jorgechp.calendarBot.TelegramBot.interfaces.IOrderSent;
+import com.jorgechp.calendarBot.common.BotInterfaceResponsesTypes;
 import com.jorgechp.calendarBot.common.ServerResponse;
 import com.jorgechp.calendarBot.common.interfaces.IRemindable;
 import com.jorgechp.calendarBot.common.interfaces.IReminderSystem;
-import com.jorgechp.calendarBot.common.ServerResponses;
+import com.jorgechp.calendarBot.common.ServerResponsesTypes;
 
 /**
  * @author jorge
@@ -80,33 +81,41 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 	}
 
 	public void processMesage(Message messageReceived)  {
-		ServerResponses response = ServerResponses.REQUEST_OK;
+		ServerResponsesTypes responseServer = ServerResponsesTypes.REQUEST_VOID;
+		BotInterfaceResponsesTypes responseBot = BotInterfaceResponsesTypes.BOT_REQUEST_OK;
+		
 		String messageText = messageReceived.getText();
-		BotOrder orderProcessed = botModel.processOrder(messageText);	
+		BotOrder orderProcessed = botModel.processOrder(messageText);
+		boolean isParsedWithoutErrors = orderProcessed.isParsedWithoutErrors();
 		OrderType newOrder = orderProcessed.getOrder();
 		List<String> arguments = orderProcessed.getOrderArguments();
 		
 		switch (newOrder) {
-			case ADD_REMINDER:				  
-			    java.util.Date d = new Date(Long.parseLong(arguments.get(0)));	
-			    
-			    ServerResponse<Long> responseFromReminderSystem;
-			    responseFromReminderSystem = reminderSystem.addReminder(arguments.get(1),
-						arguments.get(2),
-						messageReceived.getChatId());		
-			    
-			    if(responseFromReminderSystem.getResponseType() == ServerResponses.ADD_REMINDER_OK){
-			    	long idReminder = responseFromReminderSystem.getResponseObject();
-					reminderSystem.addNotification(
-							idReminder,
-							Instant.ofEpochMilli(d.getTime()),
-							0,
-							0,
-							false);	
-					response = ServerResponses.ADD_REMINDER_OK;
-			    }else{
-			    	response = ServerResponses.ADD_REMINDER_ERROR;
-			    	}	
+			case ADD_REMINDER:	
+				if(isParsedWithoutErrors){
+				    java.util.Date d = new Date(Long.parseLong(arguments.get(0)));	
+				    
+				    ServerResponse<Long> responseFromReminderSystem;
+				    responseFromReminderSystem = reminderSystem.addReminder(arguments.get(1),
+							arguments.get(2),
+							messageReceived.getChatId());	
+							    
+				    if(responseFromReminderSystem.getResponseType() == ServerResponsesTypes.ADD_REMINDER_OK){
+				    	long idReminder = responseFromReminderSystem.getResponseObject();
+						reminderSystem.addNotification(
+								idReminder,
+								Instant.ofEpochMilli(d.getTime()),
+								0,
+								0,
+								false);	
+						responseServer = ServerResponsesTypes.ADD_REMINDER_OK;
+				    }else{
+				    	responseServer = ServerResponsesTypes.ADD_REMINDER_ERROR;
+				    	}
+				    responseBot = BotInterfaceResponsesTypes.BOT_REQUEST_OK;
+				}else{
+					responseBot = BotInterfaceResponsesTypes.BOT_ADD_REMINDER_ERROR;
+				}
 				break;
 			case LIST:
 				List<IRemindable> reminderList = reminderSystem.getAllRemindersByUser(messageReceived.getChatId());
@@ -130,7 +139,8 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 			break;
 		}
 		
-		botModel.processServerRequest(messageReceived.getChatId(),response);
+		botModel.processBotParseResultRequest(messageReceived.getChatId(),responseBot);
+		botModel.processServerResultRequest(messageReceived.getChatId(),responseServer);
 		
 	}
 }

@@ -23,7 +23,8 @@ import com.jorgechp.calendarBot.TelegramBot.Parser.RemoveUserParser;
 import com.jorgechp.calendarBot.TelegramBot.components.OrderType;
 import com.jorgechp.calendarBot.TelegramBot.components.ParamButtonResultSet;
 import com.jorgechp.calendarBot.TelegramBot.interfaces.IOrderSent;
-import com.jorgechp.calendarBot.common.ServerResponses;
+import com.jorgechp.calendarBot.common.BotInterfaceResponsesTypes;
+import com.jorgechp.calendarBot.common.ServerResponsesTypes;
 import com.jorgechp.calendarBot.common.interfaces.IRemindable;
 import com.jorgechp.calendarBot.common.interfaces.IReminderResultSet;
 
@@ -129,7 +130,30 @@ public class TelegramBotModel {
 		jc.addCommand(LIST, listUserReminders);
 	}
 
-	public void processServerRequest(long userId, ServerResponses request){
+	
+	/**
+	 * @param chatId
+	 * @param responseBot
+	 */
+	public void processBotParseResultRequest(Long chatId,
+			BotInterfaceResponsesTypes responseBot) {
+		try {
+			switch (responseBot) {
+			case BOT_ADD_REMINDER_ERROR:			
+					sendMessageToTelegram(chatId, "REMINDER -at 5/7/2016 -title sacar al perro -description sacar tambien la basura!");
+				break;
+	
+			default:
+				break;
+			}
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void processServerResultRequest(long userId, ServerResponsesTypes request){
 		try {
 			switch (request) {
 			case ADD_REMINDER_OK:			
@@ -302,16 +326,21 @@ public class TelegramBotModel {
 			selectedCommand = jc.getParsedCommand();
 		}catch (com.beust.jcommander.MissingCommandException e){
 			selectedCommand = ERROR;
+		}catch(com.beust.jcommander.ParameterException e){
+			selectedCommand = jc.getParsedCommand();
+			isParsedWithoutErrors = false;
 		}
 		
 		
 		switch (selectedCommand) {
 		case REMINDER:	
 			newOrderType = OrderType.ADD_REMINDER;
-			orderArguments.add(reminderCommand.getDate());
-			orderArguments.add(reminderCommand.getReminderTitle());
-			orderArguments.add(reminderCommand.getDescription());
-			orderArguments.addAll(reminderCommand.getPeriodicities());
+			if(isParsedWithoutErrors){				
+				orderArguments.add(reminderCommand.getDate());
+				orderArguments.add(reminderCommand.getReminderTitle());
+				orderArguments.add(reminderCommand.getDescription());
+				orderArguments.addAll(reminderCommand.getPeriodicities());
+			}
 			break;
 		case REMOVE_REMINDER:
 			newOrderType = OrderType.REMOVE_REMINDER;
@@ -329,6 +358,7 @@ public class TelegramBotModel {
 			newOrderType = OrderType.USER_UNSUSCRIBE;			
 			break;	
 		case ERROR:
+			
 		default:
 			newOrderType = OrderType.ERROR;
 			isParsedWithoutErrors = false;
@@ -423,6 +453,8 @@ public class TelegramBotModel {
 			e.printStackTrace();
 		}		
 	}
+
+
 	
 	
 

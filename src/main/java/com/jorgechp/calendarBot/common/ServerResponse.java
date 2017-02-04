@@ -7,11 +7,9 @@ package com.jorgechp.calendarBot.common;
  * @author jorge
  *
  */
-public class ServerResponse<T> {
+public class ServerResponse<T> extends AbstractResponse<T>{
 
-	private ServerResponses responseType;
-	private T responseObject;
-	
+	private ServerResponsesTypes responseType;
 	
 	
 	/**
@@ -19,63 +17,31 @@ public class ServerResponse<T> {
 	 */
 	public ServerResponse() {
 		super();
-		this.responseType = ServerResponses.REQUEST_OK;
+		this.responseType = ServerResponsesTypes.REQUEST_OK;
 	}
-
-
-
-	/**
-	 * @param responseObjects
-	 */
-	public ServerResponse(T responseObject) {
-		super();
-		this.responseObject = responseObject;
-		this.responseType = ServerResponses.REQUEST_OK;
-	}
-
-
 
 	/**
 	 * @param responseType
 	 */
-	public ServerResponse(ServerResponses responseType) {
+	public ServerResponse(ServerResponsesTypes responseType) {
 		super();
 		this.responseType = responseType;
 	}
 	
-	
-
-
-
 	/**
 	 * @param responseType
 	 * @param responseObjects
 	 */
-	public ServerResponse(ServerResponses responseType, T responseObject) {
-		super();
-		this.responseType = responseType;
-		this.responseObject = responseObject;
+	public ServerResponse(ServerResponsesTypes responseType, T responseObject) {
+		super(responseObject);
+		this.responseType = responseType;		
 	}
-
-
 
 	/**
 	 * @return the responseType
 	 */
-	public ServerResponses getResponseType() {
+	public ServerResponsesTypes getResponseType() {
 		return responseType;
 	}
-
-
-
-	/**
-	 * @return the responseObject
-	 */
-	public T getResponseObject() {
-		return responseObject;
-	}
-	
-	
-	
 	
 }

@@ -33,7 +33,14 @@ public class Main {
 		
 		TelegramBot telegramBot = new TelegramBot();
 		telegramBot.setReminderSystem(reminderSystem);
-		telegramBot.startBot();
+		try{
+			telegramBot.startBot();
+		}catch (org.telegram.telegrambots.exceptions.TelegramApiRequestException e){
+			telegramBot = null;			
+			System.err.println("Ya hay un bot conectado con las misma clave privada");
+			System.err.println("Desconectando");
+			return;
+		}
 		
 		reminderSystem.registerNotificationListener(telegramBot);
 		

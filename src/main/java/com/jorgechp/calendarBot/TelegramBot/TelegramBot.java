@@ -59,15 +59,16 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 
 
 
-	public void startBot(){		
+	public void startBot() throws org.telegram.telegrambots.exceptions.TelegramApiRequestException{		
 		ApiContextInitializer.init(); 
 		TelegramBotsApi botsApi = new TelegramBotsApi();
         try {
-            botsApi.registerBot(botModel.getBotController());
+            botsApi.registerBot(botModel.getBotController());            
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
 	}
+
 
 	public void dispatchListener(String title, String description, long userId,
 			long reminderId) {
@@ -122,11 +123,12 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 				botModel.sendRemindersList(messageReceived.getChatId(),reminderList);
 				break;
 			case REMOVE_NOTIFICATION:
-				reminderSystem.removeNotification(
+				ServerResponse<Boolean> responseFromReminderSystem = reminderSystem.removeNotification(
 						Long.parseLong(arguments.get(0)),
 						Long.parseLong(arguments.get(1)),
 						messageReceived.getChatId()
 						);
+				responseServer = responseFromReminderSystem.getResponseType();
 				break;
 			case REMOVE_REMINDER:
 				reminderSystem.removeReminder(

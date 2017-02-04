@@ -6,6 +6,7 @@ package com.jorgechp.calendarBot.common;
 /**
  * @author jorge
  *
+ *TODO THIS CLASSS IS NOT LONGER NECCESARY
  */
 public abstract class AbstractResponse<T> {
 	protected T responseObject;

@@ -221,17 +221,19 @@ public class ReminderSystem implements IReminderSystem, INotificationListener{
 	 * @see com.jorgechp.calendarBot.CommonInterfaces.IReminderSystem#removeNotification(long, long, long)
 	 */
 	@Override
-	public void removeNotification(long reminderId, long notificationId,
+	public ServerResponse<Boolean> removeNotification(long reminderId, long notificationId,
 			long userId) {		
-		if(isSameAsReminderUser(reminderId, userId)){
-			try {
+		try {
+			if(isSameAsReminderUser(reminderId, userId)){			
 				removeNotification(reminderId, notificationId);
-			} catch (SchedulerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new ServerResponse<Boolean>(ServerResponsesTypes.REQUEST_OK,true);			
 			}
+		} catch (SchedulerException e) {
+			e.printStackTrace();								
+		} catch (NullPointerException e){
+			e.printStackTrace();	
 		}
-		
+		return new ServerResponse<Boolean>(ServerResponsesTypes.REMOVE_NOTIFICATION_ERROR,false);		
 	}
 	
 	private void removeNotification(long reminderId, long notificationId) throws SchedulerException {

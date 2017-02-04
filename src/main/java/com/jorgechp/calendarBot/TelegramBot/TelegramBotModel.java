@@ -159,7 +159,12 @@ public class TelegramBotModel {
 			case ADD_REMINDER_OK:			
 					sendMessageToTelegram(userId, "Recordatorio añadido correctamente");
 				break;
-	
+			case REMOVE_REMINDER_ERROR:
+				sendMessageToTelegram(userId, "Error al eliminar el recordatorio");
+				break;
+			case REMOVE_NOTIFICATION_ERROR:
+				sendMessageToTelegram(userId, "Error al eliminar la notificación");
+				break;
 			default:
 				break;
 			}

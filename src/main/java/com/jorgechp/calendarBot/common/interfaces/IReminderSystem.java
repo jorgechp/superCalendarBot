@@ -87,9 +87,10 @@ public interface IReminderSystem {
 	 * @param reminderId The id of the {@link Reminder} object
 	 * @param notificationId Number of {@link Notification} of the {@link Reminder}	 
 	 * @param userId id of {@link User} 
+	 * @return 
 	 * @throws SchedulerException 
 	 */
-	public void removeNotification(long reminderId, long notificationId, long userId);
+	public ServerResponse<Boolean> removeNotification(long reminderId, long notificationId, long userId);
 	
 	/**
 	 * Get all {@link Notification} objects associated to a {@link Reminder}

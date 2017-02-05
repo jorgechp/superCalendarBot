@@ -101,20 +101,17 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 							arguments.get(2),
 							messageReceived.getChatId());	
 							    
-				    if(responseFromReminderSystem.getResponseType() == ServerResponsesTypes.ADD_REMINDER_OK){
+				    responseServer = responseFromReminderSystem.getResponseType();
+				    if(responseServer == ServerResponsesTypes.ADD_REMINDER_OK){
 				    	long idReminder = responseFromReminderSystem.getResponseObject();
 						reminderSystem.addNotification(
 								idReminder,
 								Instant.ofEpochMilli(d.getTime()),
 								0,
 								0,
-								false);	
-						responseServer = ServerResponsesTypes.ADD_REMINDER_OK;
-				    }else{
-				    	responseServer = ServerResponsesTypes.ADD_REMINDER_ERROR;
-				    	}				    
-				}else{
-					responseBot = BotInterfaceResponsesTypes.BOT_ADD_REMINDER_ERROR;
+								false);							
+				    }	
+				    
 				}
 				break;
 			case LIST:
@@ -128,11 +125,9 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 							Long.parseLong(arguments.get(1)),
 							messageReceived.getChatId()
 							);
-					responseServer = responseFromReminderSystem.getResponseType();					
-				}else{
-					responseBot = BotInterfaceResponsesTypes.BOT_REMOVE_NOTIFICATION_ERROR;
+					responseServer = responseFromReminderSystem.getResponseType();						
 				}
-		
+				
 				break;
 			case REMOVE_REMINDER:
 				if(isParsedWithoutErrors){
@@ -149,8 +144,28 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 			break;
 		}
 		
+				
+		
+		responseServer = handleServerResponse(responseServer,messageReceived);
+		
+		
+		
 		botModel.processBotParseResultRequest(messageReceived.getChatId(),responseBot);
 		botModel.processServerResultRequest(messageReceived.getChatId(),responseServer);
 		
+	}
+
+
+
+	/**
+	 * @param responseServer
+	 * @param messageReceived
+	 * @return
+	 */
+	private ServerResponsesTypes handleServerResponse(ServerResponsesTypes responseServer, Message messageReceived) {
+		if(responseServer == ServerResponsesTypes.USER_NOT_FOUND_ERROR){
+			reminderSystem.addUser(messageReceived.getChatId());
+		}
+		return responseServer;
 	}
 }

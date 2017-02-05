@@ -162,15 +162,18 @@ public class TelegramBotModel {
 		try {
 			switch (request) {
 			case ADD_REMINDER_OK:			
-					sendMessageToTelegram(userId, "Recordatorio a�adido correctamente");
+					sendMessageToTelegram(userId, "Recordatorio añadido correctamente");
 				break;
 			case REMOVE_REMINDER_ERROR:
 				sendMessageToTelegram(userId, "Error al eliminar el recordatorio");
 				break;
 			case REMOVE_NOTIFICATION_ERROR:
-				sendMessageToTelegram(userId, "Error al eliminar la notificaci�n");
+				sendMessageToTelegram(userId, "Error al eliminar la notificación");
 				break;
-			default:
+			case USER_NOT_FOUND_ERROR:
+				sendMessageToTelegram(userId, "Se te ha dado de alta correctamente.");
+				break;
+			default:				
 				break;
 			}
 		} catch (TelegramApiException e) {

@@ -18,6 +18,7 @@ import com.jorgechp.calendarBot.ReminderSystem.entities.Notification;
 import com.jorgechp.calendarBot.ReminderSystem.entities.Reminder;
 import com.jorgechp.calendarBot.ReminderSystem.entities.User;
 import com.jorgechp.calendarBot.ReminderSystem.entities.interfaces.INotificationListener;
+import com.jorgechp.calendarBot.ReminderSystem.exceptions.UserNotFoundException;
 import com.jorgechp.calendarBot.ReminderSystem.management.CalendarManager;
 import com.jorgechp.calendarBot.common.ServerResponse;
 import com.jorgechp.calendarBot.common.ServerResponsesTypes;
@@ -132,20 +133,30 @@ public class ReminderSystem implements IReminderSystem, INotificationListener{
 	public boolean isUserExists(long uniqueId) {
 		return usersMap.containsKey(uniqueId);		
 	}
+	
+	public User getUser(long userId) throws UserNotFoundException{	
+		User userToExtract = usersMap.get(userId);
+		if(userToExtract == null){
+			throw new UserNotFoundException();
+		}
+		return userToExtract;
+	}
 
 	public ServerResponse<Long> addReminder(String name, String description, long userUniqueId) {
 		Reminder newReminder = new Reminder(name, description,userUniqueId);
-		if(usersMap.get(userUniqueId).addNewReminder(newReminder)){
-			try{
+		try{
+			if(getUser(userUniqueId).addNewReminder(newReminder)){			
 				long uniqueId = newReminder.getReminderId();
 				remindersMap.put(uniqueId,newReminder);
-				return new ServerResponse<Long>(ServerResponsesTypes.ADD_REMINDER_OK,uniqueId);
-			}catch(NullPointerException e){
-				//If something wrong has happen, we need to remove the Reminder from usersMap
-				remindersMap.remove(newReminder);
-			}						
-		}
-		return new ServerResponse<>(ServerResponsesTypes.ADD_REMINDER_ERROR);
+				return new ServerResponse<Long>(ServerResponsesTypes.ADD_REMINDER_OK,uniqueId);					
+			}
+		}catch(UserNotFoundException e){
+			return new ServerResponse<Long>(ServerResponsesTypes.USER_NOT_FOUND_ERROR);
+		}catch(NullPointerException e){
+			//If something wrong has happen, we need to remove the Reminder from usersMap
+			remindersMap.remove(newReminder);
+		}	
+		return new ServerResponse<Long>(ServerResponsesTypes.ADD_REMINDER_ERROR);
 	}
 	
 	/* (non-Javadoc)
@@ -161,23 +172,31 @@ public class ReminderSystem implements IReminderSystem, INotificationListener{
 
 	private void removeReminder(long reminderUniqueId) 	{	
 		List<Notification> notificationsToRemove = getAllNotificationsByReminder(reminderUniqueId);
-		Reminder reminderToRemove = remindersMap.get(reminderUniqueId);
-		User userToExtract = usersMap.get(reminderToRemove.getUserUniqueId());
+		Reminder reminderToRemove = remindersMap.get(reminderUniqueId);		
 		try {
+			User userToExtract = getUser(reminderUniqueId);
 			for(Notification notificationToRemove : notificationsToRemove){			
 					systemCalendarManager.removeNotificationJob(notificationToRemove);					
-			}			
-					
+			}	
+			userToExtract.removeReminder(reminderToRemove);	
+			remindersMap.remove(reminderUniqueId);					
+		} catch (UserNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		userToExtract.removeReminder(reminderToRemove);	
-		remindersMap.remove(reminderUniqueId);		
+		}		
 	}
 
 	public List<IRemindable> getAllRemindersByUser(long userUniqueId) {
-		User userToGetRemindersFrom = usersMap.get(userUniqueId);
+		User userToGetRemindersFrom = null;
+		try {
+			userToGetRemindersFrom = getUser(userUniqueId);
+		} catch (UserNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		List<IRemindable> listToReturn = new LinkedList<IRemindable>();
 		
 		for(Reminder reminderToAdd : userToGetRemindersFrom.getUserReminders()){

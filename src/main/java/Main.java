@@ -13,9 +13,9 @@ public class Main {
 		Date date = new Date();
 		long time = date.getTime()+3000*2;		
 		
-		long userId = 2677003L;
+		//long userId = 2677003L;
 		ReminderSystem reminderSystem = new ReminderSystem();
-		reminderSystem.addUser(userId);
+		//reminderSystem.addUser(userId);
 		reminderSystem.startReminderSystem();
 		
 /*		long reminderId = reminderSystem.addReminder("hola Eloi", "jejejejej", userId);

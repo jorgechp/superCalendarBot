@@ -142,6 +142,9 @@ public class TelegramBotModel {
 			case BOT_ADD_REMINDER_ERROR:			
 					sendMessageToTelegram(chatId, "REMINDER -at 5/7/2016 -title sacar al perro -description sacar tambien la basura!");
 				break;
+			case BOT_REMOVE_REMINDER_ERROR:
+				sendMessageToTelegram(chatId, "REMOVE-REMINDER -r 324234");
+				break;	
 			case BOT_REMOVE_NOTIFICATION_ERROR:
 				sendMessageToTelegram(chatId, "REMOVE-NOTIFICATION -r 324234 -n 234324324");
 				break;	
@@ -351,7 +354,9 @@ public class TelegramBotModel {
 			break;
 		case REMOVE_REMINDER:
 			newOrderType = OrderType.REMOVE_REMINDER;
-			orderArguments.add(new Integer(removeReminderCommand.getReminderId()).toString());
+			if(isParsedWithoutErrors){	
+				orderArguments.add(new Integer(removeReminderCommand.getReminderId()).toString());
+			}
 			break;
 		case REMOVE_NOTIFICATION:
 			newOrderType = OrderType.REMOVE_NOTIFICATION;		

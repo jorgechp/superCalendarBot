@@ -135,11 +135,15 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 		
 				break;
 			case REMOVE_REMINDER:
-				reminderSystem.removeReminder(
-						Long.parseLong(arguments.get(0)),
-						messageReceived.getChatId()
-						);				
-				break;
+				if(isParsedWithoutErrors){
+					reminderSystem.removeReminder(
+							Long.parseLong(arguments.get(0)),
+							messageReceived.getChatId()
+							);				
+					break;
+				}else{
+					responseBot = BotInterfaceResponsesTypes.BOT_REMOVE_REMINDER_ERROR;
+				}
 
 		default:
 			break;

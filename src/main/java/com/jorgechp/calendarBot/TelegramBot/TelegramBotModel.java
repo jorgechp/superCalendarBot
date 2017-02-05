@@ -142,7 +142,9 @@ public class TelegramBotModel {
 			case BOT_ADD_REMINDER_ERROR:			
 					sendMessageToTelegram(chatId, "REMINDER -at 5/7/2016 -title sacar al perro -description sacar tambien la basura!");
 				break;
-	
+			case BOT_REMOVE_NOTIFICATION_ERROR:
+				sendMessageToTelegram(chatId, "REMOVE-NOTIFICATION -r 324234 -n 234324324");
+				break;	
 			default:
 				break;
 			}
@@ -157,13 +159,13 @@ public class TelegramBotModel {
 		try {
 			switch (request) {
 			case ADD_REMINDER_OK:			
-					sendMessageToTelegram(userId, "Recordatorio añadido correctamente");
+					sendMessageToTelegram(userId, "Recordatorio aï¿½adido correctamente");
 				break;
 			case REMOVE_REMINDER_ERROR:
 				sendMessageToTelegram(userId, "Error al eliminar el recordatorio");
 				break;
 			case REMOVE_NOTIFICATION_ERROR:
-				sendMessageToTelegram(userId, "Error al eliminar la notificación");
+				sendMessageToTelegram(userId, "Error al eliminar la notificaciï¿½n");
 				break;
 			default:
 				break;
@@ -352,9 +354,11 @@ public class TelegramBotModel {
 			orderArguments.add(new Integer(removeReminderCommand.getReminderId()).toString());
 			break;
 		case REMOVE_NOTIFICATION:
-			newOrderType = OrderType.REMOVE_NOTIFICATION;			
-			orderArguments.add(new Long(removeNotificationCommand.getNotificationId()).toString());
-			orderArguments.add(new Long(removeNotificationCommand.getReminderId()).toString());
+			newOrderType = OrderType.REMOVE_NOTIFICATION;		
+			if(isParsedWithoutErrors){	
+				orderArguments.add(new Long(removeNotificationCommand.getNotificationId()).toString());
+				orderArguments.add(new Long(removeNotificationCommand.getReminderId()).toString());
+			}
 			break;
 		case LIST:
 			newOrderType = OrderType.LIST;		
@@ -430,7 +434,7 @@ public class TelegramBotModel {
 						}
 					
 						paramToInclude = new ParamButtonResultSet(
-								"Eliminar notificación "+notification.getIdNotification(), 
+								"Eliminar notificaciï¿½n "+notification.getIdNotification(), 
 								"REMOVE-NOTIFICATION -n "+
 								notification.getIdNotification()+
 								" -r "+

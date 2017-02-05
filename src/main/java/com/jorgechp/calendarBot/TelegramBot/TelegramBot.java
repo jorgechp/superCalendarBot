@@ -112,8 +112,7 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 						responseServer = ServerResponsesTypes.ADD_REMINDER_OK;
 				    }else{
 				    	responseServer = ServerResponsesTypes.ADD_REMINDER_ERROR;
-				    	}
-				    responseBot = BotInterfaceResponsesTypes.BOT_REQUEST_OK;
+				    	}				    
 				}else{
 					responseBot = BotInterfaceResponsesTypes.BOT_ADD_REMINDER_ERROR;
 				}
@@ -123,12 +122,17 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 				botModel.sendRemindersList(messageReceived.getChatId(),reminderList);
 				break;
 			case REMOVE_NOTIFICATION:
-				ServerResponse<Boolean> responseFromReminderSystem = reminderSystem.removeNotification(
-						Long.parseLong(arguments.get(0)),
-						Long.parseLong(arguments.get(1)),
-						messageReceived.getChatId()
-						);
-				responseServer = responseFromReminderSystem.getResponseType();
+				if(isParsedWithoutErrors){
+					ServerResponse<Boolean> responseFromReminderSystem = reminderSystem.removeNotification(
+							Long.parseLong(arguments.get(0)),
+							Long.parseLong(arguments.get(1)),
+							messageReceived.getChatId()
+							);
+					responseServer = responseFromReminderSystem.getResponseType();					
+				}else{
+					responseBot = BotInterfaceResponsesTypes.BOT_REMOVE_NOTIFICATION_ERROR;
+				}
+		
 				break;
 			case REMOVE_REMINDER:
 				reminderSystem.removeReminder(

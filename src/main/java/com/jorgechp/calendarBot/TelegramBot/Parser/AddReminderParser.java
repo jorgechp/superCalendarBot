@@ -8,8 +8,19 @@ import java.util.List;
 
 
 import com.beust.jcommander.Parameter;
+import com.jorgechp.calendarBot.TelegramBot.components.OrderType;
+import com.jorgechp.calendarBot.TelegramBot.components.creator.AddReminderCreator;
 
 public class AddReminderParser extends AbstractParser{
+	
+
+	/**
+	 * Default Constructor
+	 */
+	public AddReminderParser() {
+		super(OrderType.ADD_REMINDER);		
+	}
+
 	private final String  acceptedFormatDate= "dd/MM/yyyy";
 	private final String  acceptedFormatDateHour = "dd/MM/yyyyHH:mm";
 
@@ -28,6 +39,7 @@ public class AddReminderParser extends AbstractParser{
 
 
 
+	  
 	/**
 	 * @return the reminderTitle
 	 */
@@ -72,6 +84,15 @@ public class AddReminderParser extends AbstractParser{
 		}
 		
 		return new Long(d.getTime()).toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jorgechp.calendarBot.TelegramBot.Parser.AbstractParser#createCommand()
+	 */
+	@Override
+	public LinkedList<String> createCommand() {
+		AddReminderCreator commandCreator = new AddReminderCreator();
+		return commandCreator.createArguments(this);
 	}
 	  
 	  

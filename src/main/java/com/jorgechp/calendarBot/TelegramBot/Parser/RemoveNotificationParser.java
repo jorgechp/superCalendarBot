@@ -3,7 +3,10 @@
  */
 package com.jorgechp.calendarBot.TelegramBot.Parser;
 
+import java.util.LinkedList;
+
 import com.beust.jcommander.Parameter;
+import com.jorgechp.calendarBot.TelegramBot.components.OrderType;
 
 
 /**
@@ -18,6 +21,15 @@ public class RemoveNotificationParser extends AbstractParser {
 	@Parameter(names = "-n", description = "Notification", required = true)
 	private long notificationId;
 
+	
+	
+	/*
+	 * Default constructor
+	 */
+	public RemoveNotificationParser() {
+		super(OrderType.REMOVE_NOTIFICATION);
+	}
+
 	/**
 	 * @return the reminderId
 	 */
@@ -31,6 +43,16 @@ public class RemoveNotificationParser extends AbstractParser {
 	public long getNotificationId() {
 		return notificationId;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.jorgechp.calendarBot.TelegramBot.Parser.AbstractParser#createCommand()
+	 */
+	@Override
+	public LinkedList<String> createCommand() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	
 	

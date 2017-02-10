@@ -22,7 +22,9 @@ import com.jorgechp.calendarBot.TelegramBot.Parser.RemoveReminderParser;
 import com.jorgechp.calendarBot.TelegramBot.Parser.RemoveUserParser;
 import com.jorgechp.calendarBot.TelegramBot.components.OrderType;
 import com.jorgechp.calendarBot.TelegramBot.components.ParamButtonResultSet;
+import com.jorgechp.calendarBot.TelegramBot.interfaces.ICommandCreator;
 import com.jorgechp.calendarBot.TelegramBot.interfaces.IOrderSent;
+import com.jorgechp.calendarBot.TelegramBot.resources.Messages;
 import com.jorgechp.calendarBot.common.BotInterfaceResponsesTypes;
 import com.jorgechp.calendarBot.common.ServerResponsesTypes;
 import com.jorgechp.calendarBot.common.interfaces.IRemindable;
@@ -48,32 +50,32 @@ public class TelegramBotModel {
 	/**
 	 * Defines an error in the command
 	 */
-	private static final String ERROR = "ERROR";
+	private static String ERROR = Messages.getString("TelegramBot.ERROR"); //$NON-NLS-1$
 
 	/**
 	 * Defines the name of UnsuscribeUser command
 	 */
-	private static final String UNSUSCRIBE = "UNSUSCRIBE";
+	private static String UNSUSCRIBE = Messages.getString("TelegramBot.UNSUSCRIBE"); //$NON-NLS-1$
 
 	/**
 	 * Defines the name of the RemoveReminder command
 	 */
-	private static final String REMOVE_REMINDER = "REMOVE-REMINDER";
+	private static String REMOVE_REMINDER = Messages.getString("TelegramBot.REMOV_REMINDER"); //$NON-NLS-1$
 
 	/**
 	 * Defines the name of the RemoveNotification command
 	 */
-	private static final String REMOVE_NOTIFICATION = "REMOVE-NOTIFICATION";
+	private static String REMOVE_NOTIFICATION = Messages.getString("TelegramBot.REMOVE_NOTIFICATION"); //$NON-NLS-1$
 	
 	/**
 	 * Defines the name of the new Reminder command
 	 */
-	private static final String REMINDER = "REMINDER";
+	private static String REMINDER = Messages.getString("TelegramBot.REMINDER"); //$NON-NLS-1$
 	
 	/**
 	 * Defines the name of the new List command
 	 */
-	private static final String LIST = "LIST";
+	private static String LIST = Messages.getString("TelegramBot.LIST"); //$NON-NLS-1$
 
 	/**
 	 * This interface defines the controller of this bot
@@ -88,10 +90,10 @@ public class TelegramBotModel {
 	 * Regular expressions that match with different Time patterns
 	 * 
 	 */
-	public static String HOUR_PATTERN = "((1|2)?\\d:[0-5]\\d)";	
-	public static String DATE_PATTERN = "((|1|2|3)\\d\\/1?\\d\\/\\d?\\d?\\d\\d)";
-	public static String DATE_HOUR_PATTERN = DATE_PATTERN + " ?" + HOUR_PATTERN + " .+";	
-	public static String ADD_REMINDER_PATTERN = REMINDER+" "+ DATE_HOUR_PATTERN;
+	public static String HOUR_PATTERN = "((1|2)?\\d:[0-5]\\d)";	 //$NON-NLS-1$
+	public static String DATE_PATTERN = "((|1|2|3)\\d\\/1?\\d\\/\\d?\\d?\\d\\d)"; //$NON-NLS-1$
+	public static String DATE_HOUR_PATTERN = DATE_PATTERN + " ?" + HOUR_PATTERN + " .+";	 //$NON-NLS-1$ //$NON-NLS-2$
+	public static String ADD_REMINDER_PATTERN = REMINDER+" "+ DATE_HOUR_PATTERN; //$NON-NLS-1$
 	
 	/**
 	 * Instantiates a {@link TelegramBotModel} object
@@ -116,7 +118,7 @@ public class TelegramBotModel {
 		
 		createCommands();
 		
-		formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
+		formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault()); //$NON-NLS-1$
 	}
 	
 	/**
@@ -140,13 +142,13 @@ public class TelegramBotModel {
 		try {
 			switch (responseBot) {
 			case BOT_ADD_REMINDER_ERROR:			
-					sendMessageToTelegram(chatId, "REMINDER -at 5/7/2016 -title sacar al perro -description sacar tambien la basura!");
+					sendMessageToTelegram(chatId, Messages.getString("TelegramBot.REMINDER_EXAMPLE")); //$NON-NLS-1$
 				break;
 			case BOT_REMOVE_REMINDER_ERROR:
-				sendMessageToTelegram(chatId, "REMOVE-REMINDER -r 324234");
+				sendMessageToTelegram(chatId, Messages.getString("TelegramBot.REMOVE_REMINDER_EXAMPLE")); //$NON-NLS-1$
 				break;	
 			case BOT_REMOVE_NOTIFICATION_ERROR:
-				sendMessageToTelegram(chatId, "REMOVE-NOTIFICATION -r 324234 -n 234324324");
+				sendMessageToTelegram(chatId, Messages.getString("TelegramBot.REMOVE_NOTIFICATION_EXAMPLE")); //$NON-NLS-1$
 				break;	
 			default:
 				break;
@@ -162,16 +164,16 @@ public class TelegramBotModel {
 		try {
 			switch (request) {
 			case ADD_REMINDER_OK:			
-					sendMessageToTelegram(userId, "Recordatorio añadido correctamente");
+					sendMessageToTelegram(userId, Messages.getString("TelegramBot.NEW_REMINDER_OK")); //$NON-NLS-1$
 				break;
 			case REMOVE_REMINDER_ERROR:
-				sendMessageToTelegram(userId, "Error al eliminar el recordatorio");
+				sendMessageToTelegram(userId, Messages.getString("TelegramBot.NEW_REMINDER_ERROR")); //$NON-NLS-1$
 				break;
 			case REMOVE_NOTIFICATION_ERROR:
-				sendMessageToTelegram(userId, "Error al eliminar la notificación");
+				sendMessageToTelegram(userId, Messages.getString("TelegramBot.NOTIFICATION_ERROR")); //$NON-NLS-1$
 				break;
 			case USER_NOT_FOUND_ERROR:
-				sendMessageToTelegram(userId, "Se te ha dado de alta correctamente.");
+				sendMessageToTelegram(userId, Messages.getString("TelegramBot.ADD_USER_OK")); //$NON-NLS-1$
 				break;
 			default:				
 				break;
@@ -276,27 +278,27 @@ public class TelegramBotModel {
 		
 		List<String> argvModified = new LinkedList<String>();
 		argvModified.add(command[index++]); 
-		argvModified.add("-at");
+		argvModified.add(Messages.getString("TelegramBot.PARAMETER_AT")); //$NON-NLS-1$
 		argvModified.add(command[index++]); 
 		if(command[index].matches(HOUR_PATTERN)){
 			argvModified.add(command[index++]);
 		}
-		argvModified.add("-title");
+		argvModified.add(Messages.getString("TelegramBot.PARAMETER_TITLE")); //$NON-NLS-1$
 		if(index < limit){
-			while(index < limit && command[index].trim().equals("|") == false){
+			while(index < limit && command[index].trim().equals("|") == false){ //$NON-NLS-1$
 				argvModified.add(command[index++]);
 			}
 			++index;				
 				if(index < limit){
-					argvModified.add("-description");
-					while(index < limit && command[index].trim().equals("|") == false){
+					argvModified.add(Messages.getString("TelegramBot.PARAMETER_DESCRIPTION")); //$NON-NLS-1$
+					while(index < limit && command[index].trim().equals("|") == false){ //$NON-NLS-1$
 						argvModified.add(command[index++]);
 					}	
 					++index;
 					
 					if(index < limit){
-						argvModified.add("-periodicity");
-						while(index < limit && command[index].trim().equals("|") == false){
+						argvModified.add(Messages.getString("TelegramBot.PARAMETER_PERIODICITY")); //$NON-NLS-1$
+						while(index < limit && command[index].trim().equals("|") == false){ //$NON-NLS-1$
 							argvModified.add(command[index++]);
 						}	
 					}
@@ -324,7 +326,7 @@ public class TelegramBotModel {
 		List<String> orderArguments = new LinkedList<String>();
 		boolean isParsedWithoutErrors = true;
 		
-		String[] argv = messageText.split(" ");	
+		String[] argv = messageText.split(" ");	 //$NON-NLS-1$
 		
 		//If user don't user params, we need to map the input adding these params
 		//before calling to the parser
@@ -344,43 +346,17 @@ public class TelegramBotModel {
 			isParsedWithoutErrors = false;
 		}
 		
-		
-		switch (selectedCommand) {
-		case REMINDER:	
-			newOrderType = OrderType.ADD_REMINDER;
-			if(isParsedWithoutErrors){				
-				orderArguments.add(reminderCommand.getDate());
-				orderArguments.add(reminderCommand.getReminderTitle());
-				orderArguments.add(reminderCommand.getDescription());
-				orderArguments.addAll(reminderCommand.getPeriodicities());
-			}
-			break;
-		case REMOVE_REMINDER:
-			newOrderType = OrderType.REMOVE_REMINDER;
-			if(isParsedWithoutErrors){	
-				orderArguments.add(new Integer(removeReminderCommand.getReminderId()).toString());
-			}
-			break;
-		case REMOVE_NOTIFICATION:
-			newOrderType = OrderType.REMOVE_NOTIFICATION;		
-			if(isParsedWithoutErrors){	
-				orderArguments.add(new Long(removeNotificationCommand.getNotificationId()).toString());
-				orderArguments.add(new Long(removeNotificationCommand.getReminderId()).toString());
-			}
-			break;
-		case LIST:
-			newOrderType = OrderType.LIST;		
-			break;
-		case UNSUSCRIBE:
-			newOrderType = OrderType.USER_UNSUSCRIBE;			
-			break;	
-		case ERROR:
-			
-		default:
+		JCommander parsedJCommander = jc.getCommands().get(selectedCommand);
+		if(parsedJCommander != null){
+			AbstractParser abstractParser = (AbstractParser) parsedJCommander.getObjects().get(0);		
+			orderArguments = abstractParser.createCommand();
+			newOrderType = abstractParser.getOrderType();
+		}else{
 			newOrderType = OrderType.ERROR;
-			isParsedWithoutErrors = false;
-			break;
+			isParsedWithoutErrors = false;			
 		}
+		
+
 		return new BotOrder(newOrderType, orderArguments, isParsedWithoutErrors);
 		
 		
@@ -397,55 +373,55 @@ public class TelegramBotModel {
 
 		try {			
 			if(reminderList.size() > 0){
-				bufferOfMessageToSend.append("Tienes las siguientes alarmas:\n");
-				bufferOfMessageToSend.append("\n");
-				bufferOfMessageToSend.append("\n");
+				bufferOfMessageToSend.append(Messages.getString("TelegramBot.ALARM_LIST"+'\n')); //$NON-NLS-1$
+				bufferOfMessageToSend.append("\n"); //$NON-NLS-1$
+				bufferOfMessageToSend.append("\n"); //$NON-NLS-1$
 				sendMessageToTelegram(idUser,bufferOfMessageToSend.toString());
 				bufferOfMessageToSend = new StringBuffer();
 				
 				ParamButtonResultSet paramToInclude;
 				
 				for(IRemindable reminder : reminderList){
-					bufferOfMessageToSend.append("- (");
+					bufferOfMessageToSend.append("- ("); //$NON-NLS-1$
 					bufferOfMessageToSend.append(reminder.getReminderId());
-					bufferOfMessageToSend.append(") ");
+					bufferOfMessageToSend.append(") "); //$NON-NLS-1$
 					bufferOfMessageToSend.append(reminder.getName());
-					bufferOfMessageToSend.append("\n");
+					bufferOfMessageToSend.append("\n"); //$NON-NLS-1$
 					
 					List<IReminderResultSet> notificationsInformation;
 					List<ParamButtonResultSet> listOfNotificationIds //
 							= new LinkedList<ParamButtonResultSet>();
 					
 					paramToInclude = new ParamButtonResultSet(
-							"Eliminar recordatorio "+reminder.getReminderId(), 
-							"REMOVE-REMINDER -r "+reminder.getReminderId(),
+							Messages.getString("TelegramBot.REMOVE_REMINDER")+reminder.getReminderId(),  //$NON-NLS-1$
+							"REMOVE-REMINDER -r "+reminder.getReminderId(), //$NON-NLS-1$
 							true);				
 					
 					notificationsInformation = reminder.getPeriodicities();	
 					
 					listOfNotificationIds.add(paramToInclude);
 					
-					bufferOfMessageToSend.append("\nNOTIFICACIONES ASOCIADAS\n");
+					bufferOfMessageToSend.append(Messages.getString('\n'+"TelegramBot.NOTIFICATION_LIST"+'\n')); //$NON-NLS-1$
 					for(IReminderResultSet notification : notificationsInformation){
-						bufferOfMessageToSend.append("--- ");
-						bufferOfMessageToSend.append("(");
+						bufferOfMessageToSend.append("--- "); //$NON-NLS-1$
+						bufferOfMessageToSend.append("("); //$NON-NLS-1$
 						bufferOfMessageToSend.append(notification.getPeriodicity());
-						bufferOfMessageToSend.append(") ");
+						bufferOfMessageToSend.append(") "); //$NON-NLS-1$
 						if(notification.getPeriodicity() > 0){
-							bufferOfMessageToSend.append("Frecuencia (minutos): ");
+							bufferOfMessageToSend.append(Messages.getString("TelegramBot.FREQUENCY")); //$NON-NLS-1$
 							bufferOfMessageToSend.append(notification.getPeriodicity());
-							bufferOfMessageToSend.append("\n");
+							bufferOfMessageToSend.append("\n"); //$NON-NLS-1$
 						}else{
-							bufferOfMessageToSend.append("Fecha: ");
+							bufferOfMessageToSend.append(Messages.getString("TelegramBot.DATE")); //$NON-NLS-1$
 							bufferOfMessageToSend.append(formatter.format(notification.getStartTime()));
-							bufferOfMessageToSend.append("\n");
+							bufferOfMessageToSend.append("\n"); //$NON-NLS-1$
 						}
 					
 						paramToInclude = new ParamButtonResultSet(
-								"Eliminar notificaci�n "+notification.getIdNotification(), 
-								"REMOVE-NOTIFICATION -n "+
+								Messages.getString("TelegramBot.REMOVE_NOTIFICATION_TEXT")+notification.getIdNotification(),  //$NON-NLS-1$
+								"REMOVE-NOTIFICATION -n "+ //$NON-NLS-1$
 								notification.getIdNotification()+
-								" -r "+
+								" -r "+ //$NON-NLS-1$
 								notification.getIdReminder()
 								);
 						
@@ -461,7 +437,7 @@ public class TelegramBotModel {
 				}				
 				
 			}else{
-				bufferOfMessageToSend.append("No tienes alarmas programadas :)");
+				bufferOfMessageToSend.append(Messages.getString("TelegramBot.NO_ALARMS")); //$NON-NLS-1$
 				sendMessageToTelegram(idUser,bufferOfMessageToSend.toString());
 			}		
 			

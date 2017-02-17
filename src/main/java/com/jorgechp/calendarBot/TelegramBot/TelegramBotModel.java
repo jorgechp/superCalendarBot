@@ -16,6 +16,7 @@ import com.beust.jcommander.JCommander;
 import com.jorgechp.calendarBot.TelegramBot.Entities.BotOrder;
 import com.jorgechp.calendarBot.TelegramBot.Parser.AbstractParser;
 import com.jorgechp.calendarBot.TelegramBot.Parser.AddReminderParser;
+import com.jorgechp.calendarBot.TelegramBot.Parser.HelpReminderParser;
 import com.jorgechp.calendarBot.TelegramBot.Parser.ListUserRemindersParser;
 import com.jorgechp.calendarBot.TelegramBot.Parser.RemoveNotificationParser;
 import com.jorgechp.calendarBot.TelegramBot.Parser.RemoveReminderParser;
@@ -37,15 +38,20 @@ import com.jorgechp.calendarBot.common.interfaces.IReminderResultSet;
  * @date 25 of January of 2017
  *  
  */
-public class TelegramBotModel {
-	
+public class TelegramBotModel {	
 	private JCommander jc;
 	private AddReminderParser reminderCommand;
 	private RemoveReminderParser removeReminderCommand;
 	private RemoveNotificationParser removeNotificationCommand;
+	private HelpReminderParser helpCommand;
 	private RemoveUserParser removeUserCommand;
 	private ListUserRemindersParser listUserReminders;
 	
+	
+	/**
+	 * bot's nick in Telegram
+	 */	
+	private String botName;
 	
 	/**
 	 * Defines an error in the command
@@ -71,6 +77,11 @@ public class TelegramBotModel {
 	 * Defines the name of the new Reminder command
 	 */
 	private static String REMINDER = Messages.getString("TelegramBot.REMINDER"); //$NON-NLS-1$
+	
+	/**
+	 * Defines the name of the new Help  command
+	 */
+	private static String HELP = Messages.getString("TelegramBot.COMMAND_HELP"); //$NON-NLS-1$
 	
 	/**
 	 * Defines the name of the new List command
@@ -114,11 +125,13 @@ public class TelegramBotModel {
 		removeReminderCommand = new RemoveReminderParser();
 		removeNotificationCommand = new RemoveNotificationParser();
 		removeUserCommand = new RemoveUserParser();
+		helpCommand = new HelpReminderParser();
 		listUserReminders = new ListUserRemindersParser();	
 		
 		createCommands();
 		
 		formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault()); //$NON-NLS-1$
+		botName = '@'+botController.getBotUsername();
 	}
 	
 	/**
@@ -129,6 +142,7 @@ public class TelegramBotModel {
 		jc.addCommand(REMOVE_REMINDER, removeReminderCommand);
 		jc.addCommand(REMOVE_NOTIFICATION, removeNotificationCommand);
 		jc.addCommand(UNSUSCRIBE, removeUserCommand);
+		jc.addCommand(HELP, helpCommand);
 		jc.addCommand(LIST, listUserReminders);
 	}
 
@@ -150,7 +164,24 @@ public class TelegramBotModel {
 			case BOT_REMOVE_NOTIFICATION_ERROR:
 				sendMessageToTelegram(chatId, Messages.getString("TelegramBot.REMOVE_NOTIFICATION_EXAMPLE")); //$NON-NLS-1$
 				break;	
+			case BOT_COMMAND_HELP:
+				sendMessageToTelegram(chatId, Messages.getString("HELP"));
+				break;
 			default:
+				List<ParamButtonResultSet> listOfNotificationIds //
+				= new LinkedList<ParamButtonResultSet>();
+				
+				ParamButtonResultSet paramToInclude = new ParamButtonResultSet(
+						Messages.getString("TelegramBot.VIEW_HELP"),  //$NON-NLS-1$
+						Messages.getString("TelegramBot.COMMAND_HELP"), //$NON-NLS-1$
+						true);
+				
+				listOfNotificationIds.add(paramToInclude);
+				sendCustomKeyboard(
+						chatId,
+						Messages.getString("TelegramBot.COMMAND_ERROR_HELP"),
+						listOfNotificationIds
+						);
 				break;
 			}
 		} catch (TelegramApiException e) {
@@ -160,8 +191,10 @@ public class TelegramBotModel {
 		
 	}
 	
+	
+	
 	public void processServerResultRequest(long userId, ServerResponsesTypes request){
-		try {
+		try {			
 			switch (request) {
 			case ADD_REMINDER_OK:			
 					sendMessageToTelegram(userId, Messages.getString("TelegramBot.NEW_REMINDER_OK")); //$NON-NLS-1$
@@ -175,7 +208,7 @@ public class TelegramBotModel {
 			case USER_NOT_FOUND_ERROR:
 				sendMessageToTelegram(userId, Messages.getString("TelegramBot.ADD_USER_OK")); //$NON-NLS-1$
 				break;
-			default:				
+			default:	
 				break;
 			}
 		} catch (TelegramApiException e) {
@@ -326,11 +359,16 @@ public class TelegramBotModel {
 		List<String> orderArguments = new LinkedList<String>();
 		boolean isParsedWithoutErrors = true;
 		
-		String[] argv = messageText.split(" ");	 //$NON-NLS-1$
+		String parsedString = messageText;
+		if(messageText.contains(botName)){
+			parsedString = messageText.substring(botName.length()+1);
+		}
+		
+		String[] argv = parsedString.split(" ");	 //$NON-NLS-1$
 		
 		//If user don't user params, we need to map the input adding these params
 		//before calling to the parser
-		if(messageText.matches(ADD_REMINDER_PATTERN)){
+		if(parsedString.matches(ADD_REMINDER_PATTERN)){
 			argv = parseCommandWithoutParams(argv);
 		}
 		String selectedCommand = null;

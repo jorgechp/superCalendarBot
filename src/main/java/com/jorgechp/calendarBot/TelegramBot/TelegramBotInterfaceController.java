@@ -34,9 +34,11 @@ public class TelegramBotInterfaceController extends TelegramLongPollingBot  {
 
 	    if (updateReceived.hasMessage() && updateReceived.getMessage().hasText()) {
 	    	orderProcessor.processMesage(updateReceived.getMessage());
-	    }
-	 
+	    }    
+	    
 	}
+	
+	
 
 	@Override
 	public String getBotToken() {

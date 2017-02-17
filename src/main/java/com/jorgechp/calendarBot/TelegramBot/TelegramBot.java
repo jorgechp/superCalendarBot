@@ -139,6 +139,12 @@ public class TelegramBot implements INotificationListener, IOrderSent {
 				}else{
 					responseBot = BotInterfaceResponsesTypes.BOT_REMOVE_REMINDER_ERROR;
 				}
+			case HELP:
+				responseBot = BotInterfaceResponsesTypes.BOT_COMMAND_HELP;
+				break;
+			case ERROR:
+				responseBot = BotInterfaceResponsesTypes.BOT_COMMAND_ERROR;
+				break;
 
 		default:
 			break;

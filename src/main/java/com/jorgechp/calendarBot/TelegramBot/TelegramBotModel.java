@@ -165,7 +165,7 @@ public class TelegramBotModel {
 				sendMessageToTelegram(chatId, Messages.getString("TelegramBot.REMOVE_NOTIFICATION_EXAMPLE")); //$NON-NLS-1$
 				break;	
 			case BOT_COMMAND_HELP:
-				sendMessageToTelegram(chatId, Messages.getString("HELP"));
+				showHelpMenu(chatId);
 				break;
 			default:
 				List<ParamButtonResultSet> listOfNotificationIds //
@@ -193,6 +193,45 @@ public class TelegramBotModel {
 	
 	
 	
+	/**
+	 * Generate a help message with a help menu
+	 */
+	private void showHelpMenu(Long chatId) {
+		String messageToSend = Messages.getString("TelegramBot.HELP_MESSAGE");
+		List<ParamButtonResultSet> listOfNotificationIds = new LinkedList<ParamButtonResultSet>();
+		
+		listOfNotificationIds.add(new ParamButtonResultSet(
+				Messages.getString("TelegramBot.VIEW_ADD_REMINDER"),  //$NON-NLS-1$
+				Messages.getString("TelegramBot.COMMAND_ADD_REMINDER"), //$NON-NLS-1$
+				true));
+
+		listOfNotificationIds.add(new ParamButtonResultSet(
+				Messages.getString("TelegramBot.VIEW_LIST_REMINDER"),  //$NON-NLS-1$
+				Messages.getString("TelegramBot.COMMAND_LIST_REMINDER"), //$NON-NLS-1$
+				true));
+		
+		listOfNotificationIds.add(new ParamButtonResultSet(
+				Messages.getString("TelegramBot.VIEW_REMOVE_REMINDER"),  //$NON-NLS-1$
+				Messages.getString("TelegramBot.COMMAND_REMOVE_REMINDER"), //$NON-NLS-1$
+				true));
+		
+		listOfNotificationIds.add(new ParamButtonResultSet(
+				Messages.getString("TelegramBot.VIEW_UNSUSCRIBE_REMINDER"),  //$NON-NLS-1$
+				Messages.getString("TelegramBot.COMMAND_UNSUSCRIBE_REMINDER"), //$NON-NLS-1$
+				true));	
+		
+		try {			
+			sendCustomKeyboard(
+					chatId,
+					messageToSend,
+					listOfNotificationIds 				
+					);
+			
+		} catch (TelegramApiException e) {			
+			e.printStackTrace();
+		}
+	}
+
 	public void processServerResultRequest(long userId, ServerResponsesTypes request){
 		try {			
 			switch (request) {
@@ -241,6 +280,8 @@ public class TelegramBotModel {
 		
 	}
 	
+	
+	
 	/**
 	 * Sends a custom keyboard message.
 	 *  
@@ -270,7 +311,9 @@ public class TelegramBotModel {
         for(ParamButtonResultSet buttonParameters : listOfNotificationIds){         	
 	            InlineKeyboardButton newButton = new InlineKeyboardButton(); 
 	            newButton.setText(buttonParameters.getTextElement());	       
-	            newButton.setSwitchInlineQueryCurrentChat(buttonParameters.getCallBackString());
+	            //newButton.setSwitchInlineQueryCurrentChat(buttonParameters.getCallBackString());
+	            newButton.setCallbackData(buttonParameters.getCallBackString());
+	           
 	            
 	        if(buttonParameters.isTitle()){
 	           keyboard.add(keyboardRow);

@@ -3,6 +3,7 @@
  */
 package com.jorgechp.calendarBot.TelegramBot;
 
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -31,12 +32,17 @@ public class TelegramBotInterfaceController extends TelegramLongPollingBot  {
 	}
 
 	public void onUpdateReceived(Update updateReceived) {
-
+		CallbackQuery callbackQuery = updateReceived.getCallbackQuery();
+		if(callbackQuery !=null){
+			orderProcessor.processCallBackQuery(callbackQuery);
+		}
 	    if (updateReceived.hasMessage() && updateReceived.getMessage().hasText()) {
 	    	orderProcessor.processMesage(updateReceived.getMessage());
 	    }    
 	    
 	}
+	
+	
 	
 	
 
